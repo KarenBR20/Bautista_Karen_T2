@@ -1,0 +1,131 @@
+---
+title: "Tarea 2"
+author: "Karen Bautista"
+date: "16/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tarea 2: Genómica Funcional 2022
+
+**1. (15) Considera las siguientes cantidades discute y justifica qué tipo de distribución de probabilidad pueden tener las siguientes variables:**
+
+*a. El número (talla) de calzado de adultos varones en México*
+
++ Free-scale: Estos datos toman  en cuenta solo las tallas de adultos varones, estas
+generalmente se encuentran entre los 26 a 29 cm aproximadamente. Si existen outliers
+pero de manera general estas son las medidas mas comunes, por lo que se formaria un hub bastante grande el cual es caracteristico del modelo Free-scale. 
+
+*b. La distribución de habitantes en asentamientos humanos de México*
+
++ Aleatorio: Existen una gran cantidad de asentamientos humanos en Mexico los cuales generarian varios clusters. Es posible que algunos de estos sean mas mucho mas grandes que otros pero es probable que estos se trabajaran con los promedios de los habitantes, es decir, que la distribucion esta dada por un promedio en lugar de conglomerados de personas, lo que haria a los hubs mas grandes. Es mas probable que sea un modelo aleatorio ya que debido al uso de los promedios su distribucion pueda ser una curva de poisson. 
+
+*c. La velocidad promedio de los automóviles en Bernardo Quintana a las 9 de la mañana en un día laborable*
+
++ Free-scale: En este caso, se toma en cuenta la velocidad promedio de una gran cantidad de autos que condicen, generalmente rapido en un dia bastante ocupado. Se puede decir que estos promedios serian mas cercanos entre si, ya que generalmente la velocidad a esta hora es relativamente la misma para todos los conductores por la cantidad de trafico que generalmente hay. Esto indica que existiria un hub bastante grande que contenga la mayoria de los promedios de velocidad mas comunes con unos pocos outliers.
+
+*d. La velocidad promedio de los automóviles en Bernardo Quintana a las 3 de la mañana*
+
++ Aleatorio: En este caso, se toman los promedios de velocidad de automoviles a una hora poco comun donde la velocidad puede variar mas y los posibles nodos son menos en cantidad. No es muy probable que se generen hubs en esta red dando a la poca cantidad de nodos y a la variabilidad de estos. 
+
+**2. Supongamos que tenemos dos nodos (A,B) en una red. El nodo A y B tiene el mismo degree, pero el A tiene un coeficiente de clusterización de 1 y el nodo B un coeficiente bajo.Dibuja está situación y explica cuál sería una mejor diana si quieres eliminarlos y afectar a la red**
+
+Los nodos A y B tienen el mismo degree, por lo que ambos presentarían el mismo coeficiente de clusterización. Esto indica que estos nodos pueden ser eliminados y podrian afectar bastante la estructura de la red.
+```{r}
+library(igraph)
+grafica<-random.graph.game(3,1, directed = TRUE)
+plot(grafica)
+transitivity(grafica)
+degree(grafica)
+
+```
+
+**3. (40) Elabora un programa en R que usando funciones calcule, a partir de una matriz de adyacencia (Sólo utiliza R base para resolver este problema):**
+
+Primero se debe crear una matriz de adyacencia. Para este ejercicio se va a utilizar la 
+base de datos "karate" ya incluida en el paquete de igraph. Luego se creara la red a partir de esa matriz
+
+```{r ady}
+library(igraph)
+library(igraphdata)
+data("karate")
+ady <- get.adjacency(karate, attr='weight', sparse = FALSE)
+red<-graph_from_adjacency_matrix(ady)
+```
+
+*a. Si la red es dirigida o no*
+
+Aqui se probara si la red es dirigida o no
+```{r red}
+is_directed(red)
+```
+
+*b. Si la red es pesada o no*
+
+Aqui se probara si la red es pesada o no
+```{r weight}
+is_weighted(red)
+```
+
+*c. El degree de los nodos*
+
+Se calcula el degree de la red
+```{r degree}
+d <- degree(red)
+```
+
+*d. El histograma del degree*
+
+```{r histogram}
+hist(d)
+```
+
+**4. (40) A partir de la red de interacción de proteínas alojada en la librería igraphdata, que puedes llamar mediante data(yeast) elabora un programa en R (acá sí puedes usar librerías especializadas de R) que:**
+
+Se carga la base de datos a utilizar
+```{r yeast}
+data("yeast")
+```
+
+*a. Calcule la distribución de conectividades y grafique esa distribución. Discute tu resultado*
+
+```{r di}
+di<-degree(yeast, mode="in")
+plot(di)
+```
+
+*b. Grafique el boxplot de la distribución de conectividades y discute tu resultado*
+
+```{r box}
+boxplot(di)
+```
+
+*d. Calcule el degree máximo de la red*
+```{r max}
+which.max(degree(yeast))
+```
+
+*e. Calcule el diámetro*
+
+```{r diametro}
+diameter(yeast)
+```
+
+*h. Determine los diez nodos más importantes por al menos tres medidas de centralidad.*
+
+```{r central}
+cbet <- centr_betw(yeast)
+cde <- centr_degree(yeast)
+cei <- centr_eigen(yeast)
+```
+
+*i. Clusterizar la red por al menos dos métodos y determinar el tamaño del clúster más grande.*
+
+```{r cluster}
+cluster_fast_greedy(yeast)-> fg
+cluster_walktrap(yeast)->wt
+which.max(cluster.distribution(yeast))
+```
